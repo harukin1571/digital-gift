@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 1. ページの設定
 st.set_page_config(
@@ -15,7 +16,7 @@ st.markdown("""
     }
     .gift-header {
         text-align: center;
-        padding: 15px 10px 25px 10px;
+        padding: 15px 10px 15px 10px;
     }
     .gift-header h1 {
         color: #e63946;
@@ -29,7 +30,7 @@ st.markdown("""
         font-size: 14px;
         margin: 0;
     }
-    /* チケットカードのデザイン（独立感を持たせる） */
+    /* チケットカードのデザイン */
     .ticket-card {
         background: #ffffff;
         border-radius: 18px;
@@ -37,7 +38,7 @@ st.markdown("""
         padding: 22px;
         box-shadow: 0 10px 20px rgba(230, 57, 70, 0.08);
         position: relative;
-        transition: transform 0.2s ease;
+        overflow: hidden;
     }
     .ticket-tag {
         background: #ff4d6d;
@@ -61,26 +62,32 @@ st.markdown("""
         font-size: 13.5px;
         line-height: 1.6;
     }
-    /* カード間の区切り線（ミシン目風） */
+    /* 使用済みスタンプのデザイン */
+    .used-stamp {
+        position: absolute;
+        top: 20px;
+        right: 15px;
+        border: 3px solid #d63031;
+        color: #d63031;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 8px;
+        transform: rotate(-12deg);
+        background: rgba(255, 255, 255, 0.9);
+        letter-spacing: 2px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    /* カード間の区切り線 */
     .ticket-divider {
         border: none;
         border-top: 2px dashed #ffb3c1;
         margin: 30px 0;
-        position: relative;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. ヘッダー表示
-st.markdown("""
-<div class="gift-header">
-    <p style="font-size: 12px; color: #ff4d6d; letter-spacing: 3px; font-weight: bold;">HAPPY BIRTHDAY</p>
-    <h1>🎂 Special Gift Tickets</h1>
-    <p>お誕生日おめでとう！好きなタイミングでいつでも使ってね✨</p>
-</div>
-""", unsafe_allow_html=True)
-
-# 4. ギフト券データ（ご指定の6枚）
+# 3. ギフト券データ（ご指定いただいた7枚）
 tickets = [
     {
         "id": "ticket_1",
@@ -118,40 +125,87 @@ tickets = [
         "title": "✨ ⑥ なんでも券",
         "desc": "願い事をなんでも1つ叶えます！わがまま・お願いごと、なんでもOK"
     },
-     {
+    {
         "id": "ticket_7",
         "tag": "SPECIAL TICKET",
-        "title": "⑦でんでんむしむしチケット",
+        "title": "🐌 ⑦ でんでんむしむしチケット",
         "desc": "なにかやらかしてもでんでん大丈夫になる"
-    },
+    }
 ]
 
-# 5. セッション状態の初期化
+# 4. セッション状態の初期化
 for t in tickets:
     if t["id"] not in st.session_state:
         st.session_state[t["id"]] = False
 
-# 6. 使用確認用のダイアログ（ポップアップ機能）
+# 演出フラグの初期化
+if "play_effect" not in st.session_state:
+    st.session_state["play_effect"] = False
+
+# 5. ヘッダー表示 ＆ チケット進捗メーター
+st.markdown("""
+<div class="gift-header">
+    <p style="font-size: 12px; color: #ff4d6d; letter-spacing: 3px; font-weight: bold;">HAPPY BIRTHDAY</p>
+    <h1>🎂 さおり専属 Special Gift Tickets</h1>
+    <p>お誕生日おめでとう！好きなタイミングでいつでも使ってね✨</p>
+</div>
+""", unsafe_allow_html=True)
+
+# 使用枚数カウント
+used_count = sum(1 for t in tickets if st.session_state[t["id"]])
+total_count = len(tickets)
+st.progress(used_count / total_count, text=f"🎁 チケット使用状況：{total_count}枚中 {used_count}枚 使用済み")
+
+# 6. 紙吹雪 ＆ ファンファーレ音演出用のJavaScript埋め込み
+if st.session_state["play_effect"]:
+    components.html("""
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script>
+            // 豪華な紙吹雪（左右から発射）
+            var count = 200;
+            var defaults = { origin: { y: 0.7 } };
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+
+            // ファンファーレ効果音
+            var audio = new Audio('https://actions.google.com/sounds/v1/ambiences/carnival_atmosphere.ogg');
+            audio.play().catch(function(e){ console.log("Audio play blocked"); });
+        </script>
+    """, height=0)
+    st.session_state["play_effect"] = False
+
+# 7. 使用確認用のダイアログ
 @st.dialog("⚠️ 使用確認")
 def confirm_use_dialog(ticket_id, ticket_title):
     st.write(f"本当に **「{ticket_title}」** を使用しますか？")
     st.write("※使用すると「使用済み」に切り替わります。")
     col_a, col_b = st.columns(2)
     with col_a:
-        if st.button("はい、使います！", key=f"confirm_{ticket_id}", use_container_width=True, type="primary"):
+        if st.button("はい、使います！ 🎉", key=f"confirm_{ticket_id}", use_container_width=True, type="primary"):
             st.session_state[ticket_id] = True
-            st.balloons()
+            st.session_state["play_effect"] = True
             st.rerun()
     with col_b:
         if st.button("キャンセル", key=f"cancel_{ticket_id}", use_container_width=True):
             st.rerun()
 
-# 7. チケットの一覧表示
+# 8. チケットの一覧表示
 for idx, t in enumerate(tickets):
     is_used = st.session_state[t["id"]]
     
+    stamp_html = '<div class="used-stamp">USED / 使用済</div>' if is_used else ''
+    
     st.markdown(f"""
     <div class="ticket-card">
+        {stamp_html}
         <span class="ticket-tag">{t['tag']}</span>
         <div class="ticket-title">{t['title']}</div>
         <div class="ticket-desc">{t['desc']}</div>
@@ -160,7 +214,7 @@ for idx, t in enumerate(tickets):
     
     st.write("")
     if is_used:
-        st.error("【 USED / 使用済み 】")
+        st.button("【 使用済み 】", key=f"btn_{t['id']}", disabled=True, use_container_width=True)
     else:
         if st.button("この券を使う 🎁", key=f"btn_{t['id']}", use_container_width=True):
             confirm_use_dialog(t["id"], t["title"])
@@ -172,7 +226,7 @@ st.write("")
 st.write("")
 st.divider()
 
-# 8. 管理者用リセットエリア
+# 9. 管理者用リセットエリア
 with st.expander("⚙️ 管理者用メニュー"):
     password = st.text_input("暗証番号を入力", type="password")
     if password == "1234":
