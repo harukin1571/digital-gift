@@ -122,3 +122,56 @@ tickets = [
 
 # 5. セッション状態の初期化
 for t in tickets:
+    if t["id"] not in st.session_state:
+        st.session_state[t["id"]] = False
+
+# 6. 使用確認用のダイアログ（ポップアップ機能）
+@st.dialog("⚠️ 使用確認")
+def confirm_use_dialog(ticket_id, ticket_title):
+    st.write(f"本当に **「{ticket_title}」** を使用しますか？")
+    st.write("※使用すると「使用済み」に切り替わります。")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        if st.button("はい、使います！", key=f"confirm_{ticket_id}", use_container_width=True, type="primary"):
+            st.session_state[ticket_id] = True
+            st.balloons()
+            st.rerun()
+    with col_b:
+        if st.button("キャンセル", key=f"cancel_{ticket_id}", use_container_width=True):
+            st.rerun()
+
+# 7. チケットの一覧表示
+for idx, t in enumerate(tickets):
+    is_used = st.session_state[t["id"]]
+    
+    st.markdown(f"""
+    <div class="ticket-card">
+        <span class="ticket-tag">{t['tag']}</span>
+        <div class="ticket-title">{t['title']}</div>
+        <div class="ticket-desc">{t['desc']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.write("")
+    if is_used:
+        st.error("【 USED / 使用済み 】")
+    else:
+        if st.button("この券を使う 🎁", key=f"btn_{t['id']}", use_container_width=True):
+            confirm_use_dialog(t["id"], t["title"])
+            
+    if idx < len(tickets) - 1:
+        st.markdown('<div class="ticket-divider"></div>', unsafe_allow_html=True)
+
+st.write("")
+st.write("")
+st.divider()
+
+# 8. 管理者用リセットエリア
+with st.expander("⚙️ 管理者用メニュー"):
+    password = st.text_input("暗証番号を入力", type="password")
+    if password == "1234":
+        if st.button("すべてのチケットを「未使用」に戻す"):
+            for t in tickets:
+                st.session_state[t["id"]] = False
+            st.success("すべてのチケットをリセットしました！")
+            st.rerun()
