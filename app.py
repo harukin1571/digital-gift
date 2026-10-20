@@ -87,7 +87,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. ギフト券データ（ご指定いただいた7枚）
+# 3. ギフト券データ（ご指定の7枚）
 tickets = [
     {
         "id": "ticket_1",
@@ -138,7 +138,6 @@ for t in tickets:
     if t["id"] not in st.session_state:
         st.session_state[t["id"]] = False
 
-# 演出フラグの初期化
 if "play_effect" not in st.session_state:
     st.session_state["play_effect"] = False
 
@@ -156,12 +155,11 @@ used_count = sum(1 for t in tickets if st.session_state[t["id"]])
 total_count = len(tickets)
 st.progress(used_count / total_count, text=f"🎁 チケット使用状況：{total_count}枚中 {used_count}枚 使用済み")
 
-# 6. 紙吹雪 ＆ ファンファーレ音演出用のJavaScript埋め込み
+# 6. 紙吹雪演出の埋め込み
 if st.session_state["play_effect"]:
     components.html("""
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
         <script>
-            // 豪華な紙吹雪（左右から発射）
             var count = 200;
             var defaults = { origin: { y: 0.7 } };
             function fire(particleRatio, opts) {
@@ -174,10 +172,6 @@ if st.session_state["play_effect"]:
             fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
             fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
             fire(0.1, { spread: 120, startVelocity: 45 });
-
-            // ファンファーレ効果音
-            var audio = new Audio('https://actions.google.com/sounds/v1/ambiences/carnival_atmosphere.ogg');
-            audio.play().catch(function(e){ console.log("Audio play blocked"); });
         </script>
     """, height=0)
     st.session_state["play_effect"] = False
@@ -197,20 +191,22 @@ def confirm_use_dialog(ticket_id, ticket_title):
         if st.button("キャンセル", key=f"cancel_{ticket_id}", use_container_width=True):
             st.rerun()
 
-# 8. チケットの一覧表示
+# 8. チケットの一覧表示（HTMLタグが文字化けしないように修正）
 for idx, t in enumerate(tickets):
     is_used = st.session_state[t["id"]]
     
-    stamp_html = '<div class="used-stamp">USED / 使用済</div>' if is_used else ''
+    stamp = '<div class="used-stamp">USED / 使用済</div>' if is_used else ''
     
-    st.markdown(f"""
+    card_html = f'''
     <div class="ticket-card">
-        {stamp_html}
+        {stamp}
         <span class="ticket-tag">{t['tag']}</span>
         <div class="ticket-title">{t['title']}</div>
         <div class="ticket-desc">{t['desc']}</div>
     </div>
-    """, unsafe_allow_html=True)
+    '''
+    
+    st.markdown(card_html, unsafe_allow_html=True)
     
     st.write("")
     if is_used:
