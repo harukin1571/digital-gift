@@ -75,7 +75,7 @@ st.markdown("""
 st.markdown("""
 <div class="gift-header">
     <p style="font-size: 12px; color: #ff4d6d; letter-spacing: 3px; font-weight: bold;">HAPPY BIRTHDAY</p>
-    <h1>🎂 さおり専属 Special Gift Tickets</h1>
+    <h1>🎂 Special Gift Tickets</h1>
     <p>お誕生日おめでとう！好きなタイミングでいつでも使ってね✨</p>
 </div>
 """, unsafe_allow_html=True)
@@ -92,31 +92,37 @@ tickets = [
         "id": "ticket_2",
         "tag": "TICKET #02",
         "title": "🚗 ② ドキドキ恐怖のドライブチケット",
-        "desc": "行先は着いてからのお楽しみ！？ちょっとスリリング（？）で特別なドライブにお連れします！"
+        "desc": "逆走注意！？ちょっとスリリング（？）なドライブにお連れします！"
     },
     {
         "id": "ticket_3",
         "tag": "TICKET #03",
         "title": "🎰 ③ 欲しいの出るまでガチャガチャ回します券",
-        "desc": "狙いの景品が出るまで何回でもチャレンジOK！コンプリートを目指そう。"
+        "desc": "狙いのが出るまで何回でもチャレンジOK！"
     },
     {
         "id": "ticket_4",
         "tag": "TICKET #04",
         "title": "🐙 ④ たこ焼きチケット",
-        "desc": "アツアツ焼き立ての美味しいたこ焼きをご馳走（または一緒に作ってパーティー）します！"
+        "desc": "アツアツ焼き立ての美味しいたこ焼きパーティー！"
     },
     {
         "id": "ticket_5",
         "tag": "TICKET #05",
         "title": "📞 ⑤ ∞時間お電話チケット",
-        "desc": "どれだけ長電話になってもOK！寝落ちするまでずっと一緒におしゃべりしよう。"
+        "desc": "どれだけ長電話になってもOK！何時まででももちもち"
     },
     {
         "id": "ticket_6",
         "tag": "SPECIAL TICKET",
         "title": "✨ ⑥ なんでも券",
-        "desc": "願い事をなんでも1つ叶えます！わがまま・お願いごと、なんでも大歓迎。"
+        "desc": "願い事をなんでも1つ叶えます！わがまま・お願いごと、なんでもOK"
+    },
+     {
+        "id": "ticket_"7,
+        "tag": "SPECIAL TICKET",
+        "title": "⑦でんでんむしむしチケット",
+        "desc": "なにかやらかしてもでんでん大丈夫になる"
     }
 ]
 
