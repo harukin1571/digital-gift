@@ -119,7 +119,7 @@ tickets = [
         "desc": "願い事をなんでも1つ叶えます！わがまま・お願いごと、なんでもOK"
     },
      {
-        "id": "ticket_"7,
+        "id": "ticket_7",
         "tag": "SPECIAL TICKET",
         "title": "⑦でんでんむしむしチケット",
         "desc": "なにかやらかしてもでんでん大丈夫になる"
