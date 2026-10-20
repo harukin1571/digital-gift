@@ -8,8 +8,7 @@ st.set_page_config(
 )
 
 # 2. ヘッダー表示
-st.markdown("<h1 style='text-align: center; color: #e63946;'>🎂 さおり 
-    Special Gift Tickets</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #e63946;'>🎂 さおり Special Gift Tickets</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #4a4e69;'>お誕生日おめでとう！好きなタイミングでいつでも使ってね✨</p>", unsafe_allow_html=True)
 st.write("")
 
