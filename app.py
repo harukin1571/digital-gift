@@ -244,7 +244,7 @@ st.markdown(
             font-weight:bold;
         ">HAPPY BIRTHDAY</p>
 
-        <h1>Special Gift Tickets</h1>
+<h1>Special Gift Tickets</h1>
 
 <p>
     お誕生日おめでとう！好きなタイミングでいつでも使ってね✨
