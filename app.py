@@ -326,14 +326,17 @@ def confirm_use_dialog(ticket_id, ticket_title):
 # =========================================================
 # 9. 最新状態を読み込む
 # =========================================================
+
 try:
     ticket_status = load_ticket_status()
-except Exception:
+except Exception as e:
     st.error(
         "チケットの状態を読み込めませんでした。"
-        "Supabaseの接続情報、テーブル、権限設定を確認してください。"
+        "接続情報・テーブル・権限を確認してください。"
     )
+    st.exception(e)
     st.stop()
+
 
 
 # =========================================================
